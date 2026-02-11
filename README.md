@@ -51,6 +51,15 @@ Gemini（OpenAI 兼容）推荐配置：
 - `AI_API_MODEL_FALLBACKS=gemini-2.5-flash,gemini-2.0-flash`（可选，主模型拥塞时自动降级）
 - `AI_API_RETRY_TIMES=2`（可选，默认 2 次）
 
+Gemini 不可用时自动切到 GLM（推荐配置）：
+
+- `GLM_API_KEY=你的智谱 API Key`
+- `GLM_API_BASE_URL=https://open.bigmodel.cn/api/paas/v4`
+- `GLM_API_MODEL=glm-4-flash`
+- `GLM_API_MODEL_FALLBACKS=glm-4-flash,glm-4-air`（可选）
+- `GLM_API_CHAT_PATH=/chat/completions`（可选，默认该值）
+- `GLM_API_RETRY_TIMES=2`（可选）
+
 ## 可选环境变量
 
 - `EVENTS_CACHE_TTL_MS`：活动抓取缓存时间（毫秒），默认 `180000`
