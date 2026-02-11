@@ -42,6 +42,11 @@ npm start
 - `AI_API_MODEL`：例如 `gpt-4o-mini`、`qwen-plus`、`hunyuan-turbo` 等
 - `AI_API_CHAT_PATH`：可选，默认 `/chat/completions`
 
+Gemini（OpenAI 兼容）推荐配置：
+
+- `AI_API_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai`
+- `AI_API_MODEL=gemini-2.5-flash`（或你已开通的 Gemini 3 型号）
+
 ## 可选环境变量
 
 - `EVENTS_CACHE_TTL_MS`：活动抓取缓存时间（毫秒），默认 `180000`

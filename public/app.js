@@ -200,11 +200,18 @@ async function analyzeCurrentEvents() {
       })
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+    let data = null;
+    try {
+      data = await response.json();
+    } catch (_err) {
+      data = null;
     }
 
-    const data = await response.json();
+    if (!response.ok) {
+      const message = data?.analysis || data?.message || `HTTP ${response.status}`;
+      throw new Error(message);
+    }
+
     const modelText = data.model ? `（模型：${data.model}）` : '';
     if (data.enabled) {
       setAnalyzeStatus(`已完成${modelText}`, false);
