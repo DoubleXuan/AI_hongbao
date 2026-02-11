@@ -48,6 +48,8 @@ Gemini（OpenAI 兼容）推荐配置：
 
 - `AI_API_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai`
 - `AI_API_MODEL=gemini-2.5-flash`（或你已开通的 Gemini 3 型号）
+- `AI_API_MODEL_FALLBACKS=gemini-2.5-flash,gemini-2.0-flash`（可选，主模型拥塞时自动降级）
+- `AI_API_RETRY_TIMES=2`（可选，默认 2 次）
 
 ## 可选环境变量
 
