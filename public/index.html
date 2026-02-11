@@ -12,17 +12,19 @@
       <header class="hero">
         <p class="badge">实时聚合</p>
         <h1>春节红包活动实时看板</h1>
-        <p class="subtitle">自动收集微信、腾讯混元（含浑元关键词）、通义千问等 AI APP 红包资讯</p>
+        <p class="subtitle">自动收集微信、腾讯混元、通义千问等主流 AI 平台红包资讯</p>
       </header>
+
+      <section class="models-panel">
+        <h2>已收录主流 AI 大模型平台</h2>
+        <div id="modelList" class="model-list"></div>
+      </section>
 
       <section class="controls">
         <div class="control-group">
           <label for="platformFilter">平台筛选</label>
           <select id="platformFilter">
             <option value="all">全部</option>
-            <option value="wechat">微信</option>
-            <option value="hunyuan">腾讯混元 / 浑元</option>
-            <option value="qwen">通义千问</option>
             <option value="ai">其他 AI 红包活动</option>
           </select>
         </div>
@@ -45,6 +47,19 @@
 
       <section>
         <ul id="eventList" class="event-list"></ul>
+      </section>
+
+      <section class="analysis-panel">
+        <div class="analysis-head">
+          <h2>AI 活动分析</h2>
+          <button id="analyzeBtn">分析当前筛选结果</button>
+        </div>
+        <div class="control-group">
+          <label for="analysisNote">分析偏好（可选）</label>
+          <input id="analysisNote" type="text" placeholder="比如：优先现金红包、排除复杂任务" />
+        </div>
+        <p id="analyzeStatus" class="analyze-status">分析状态：待分析</p>
+        <pre id="analysisResult" class="analysis-result">点击“分析当前筛选结果”后显示 AI 建议。</pre>
       </section>
     </main>
 

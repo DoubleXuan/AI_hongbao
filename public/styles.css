@@ -76,6 +76,38 @@ body {
   box-shadow: var(--shadow);
 }
 
+.models-panel {
+  margin-top: 18px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: var(--shadow);
+}
+
+.models-panel h2,
+.analysis-panel h2 {
+  margin: 4px 0 12px;
+  font-size: 1.1rem;
+}
+
+.model-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.model-chip {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #fce4d4;
+  border: 1px solid #efc3a8;
+  color: #7d2a1a;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
 .control-group {
   display: flex;
   flex-direction: column;
@@ -157,6 +189,40 @@ button.secondary {
   animation: fadeInUp 0.24s ease both;
 }
 
+.analysis-panel {
+  margin-top: 16px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: var(--shadow);
+}
+
+.analysis-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.analyze-status {
+  margin: 10px 0 6px;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.analysis-result {
+  margin: 0;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #e7d8ba;
+  background: #fffdfa;
+  color: #2f2a22;
+  white-space: pre-wrap;
+  min-height: 120px;
+  line-height: 1.5;
+}
+
 .event-head {
   display: flex;
   justify-content: space-between;
@@ -222,5 +288,9 @@ button.secondary {
   .meta {
     flex-direction: column;
     gap: 6px;
+  }
+  .analysis-head {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
