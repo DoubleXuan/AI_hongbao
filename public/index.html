@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>春节红包活动实时看板</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="background-shape"></div>
+    <main class="app">
+      <header class="hero">
+        <p class="badge">实时聚合</p>
+        <h1>春节红包活动实时看板</h1>
+        <p class="subtitle">自动收集微信、腾讯混元（含浑元关键词）、通义千问等 AI APP 红包资讯</p>
+      </header>
+
+      <section class="controls">
+        <div class="control-group">
+          <label for="platformFilter">平台筛选</label>
+          <select id="platformFilter">
+            <option value="all">全部</option>
+            <option value="wechat">微信</option>
+            <option value="hunyuan">腾讯混元 / 浑元</option>
+            <option value="qwen">通义千问</option>
+            <option value="ai">其他 AI 红包活动</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label for="keywordInput">关键词</label>
+          <input id="keywordInput" type="text" placeholder="比如：现金、口令、签到" />
+        </div>
+
+        <div class="button-row">
+          <button id="refreshBtn">立即刷新</button>
+          <button id="autoRefreshBtn" class="secondary">自动刷新: 开</button>
+        </div>
+      </section>
+
+      <section class="meta">
+        <span id="lastUpdated">最近更新时间：--</span>
+        <span id="statusText">状态：待加载</span>
+      </section>
+
+      <section>
+        <ul id="eventList" class="event-list"></ul>
+      </section>
+    </main>
+
+    <template id="eventItemTemplate">
+      <li class="event-item">
+        <div class="event-head">
+          <span class="tag"></span>
+          <time class="time"></time>
+        </div>
+        <h3 class="title"></h3>
+        <p class="summary"></p>
+        <a class="source" target="_blank" rel="noopener noreferrer">查看原文</a>
+      </li>
+    </template>
+
+    <script src="/app.js"></script>
+  </body>
+  </html>

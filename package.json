@@ -1,0 +1,12 @@
+{
+  "name": "ai-hongbao-dashboard",
+  "version": "1.0.0",
+  "description": "春节红包活动实时聚合网页应用",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
