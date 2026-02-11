@@ -1,5 +1,4 @@
 const eventListEl = document.getElementById('eventList');
-const templateEl = document.getElementById('eventItemTemplate');
 const refreshBtn = document.getElementById('refreshBtn');
 const autoRefreshBtn = document.getElementById('autoRefreshBtn');
 const platformFilterEl = document.getElementById('platformFilter');
@@ -15,9 +14,11 @@ const analysisResultEl = document.getElementById('analysisResult');
 let allEvents = [];
 let modelPlatforms = [];
 let infoPlatforms = [];
+let windowDays = 3;
 let autoRefreshTimer = null;
 let autoRefreshEnabled = true;
 const AUTO_REFRESH_MS = 60 * 1000;
+const MAX_ITEMS_PER_PLATFORM = 6;
 
 function formatDate(dateText) {
   if (!dateText) return '时间未知';
@@ -115,27 +116,114 @@ function filterEvents(items) {
   });
 }
 
+function groupEventsByPlatform(items) {
+  const map = new Map();
+
+  for (const item of items) {
+    if (!map.has(item.tag)) {
+      map.set(item.tag, {
+        tag: item.tag,
+        platform: item.platform,
+        count: 0,
+        latestAt: item.publishedAt,
+        events: []
+      });
+    }
+    const group = map.get(item.tag);
+    group.count += 1;
+    group.events.push(item);
+
+    const latest = group.latestAt ? new Date(group.latestAt).getTime() : 0;
+    const current = item.publishedAt ? new Date(item.publishedAt).getTime() : 0;
+    if (current > latest) {
+      group.latestAt = item.publishedAt;
+    }
+  }
+
+  return [...map.values()]
+    .map((group) => ({
+      ...group,
+      events: group.events.sort((a, b) => {
+        const at = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+        const bt = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+        return bt - at;
+      })
+    }))
+    .sort((a, b) => {
+      const at = a.latestAt ? new Date(a.latestAt).getTime() : 0;
+      const bt = b.latestAt ? new Date(b.latestAt).getTime() : 0;
+      return bt - at;
+    });
+}
+
+function createPlatformGroupNode(group) {
+  const groupNode = document.createElement('li');
+  groupNode.className = 'platform-group';
+
+  const head = document.createElement('div');
+  head.className = 'platform-head';
+
+  const title = document.createElement('h3');
+  title.className = 'platform-title';
+  title.textContent = `${group.platform}（${group.count}）`;
+
+  const latest = document.createElement('span');
+  latest.className = 'platform-latest';
+  latest.textContent = `最近：${formatDate(group.latestAt)}`;
+
+  head.appendChild(title);
+  head.appendChild(latest);
+  groupNode.appendChild(head);
+
+  const eventItems = document.createElement('div');
+  eventItems.className = 'platform-events';
+
+  for (const item of group.events.slice(0, MAX_ITEMS_PER_PLATFORM)) {
+    const row = document.createElement('article');
+    row.className = 'platform-event';
+
+    const rowTitle = document.createElement('a');
+    rowTitle.className = 'platform-event-title';
+    rowTitle.href = item.sourceUrl;
+    rowTitle.target = '_blank';
+    rowTitle.rel = 'noopener noreferrer';
+    rowTitle.textContent = item.title;
+
+    const rowMeta = document.createElement('div');
+    rowMeta.className = 'platform-event-meta';
+    rowMeta.textContent = `${formatDate(item.publishedAt)} · ${item.sourceName}`;
+
+    row.appendChild(rowTitle);
+    row.appendChild(rowMeta);
+    eventItems.appendChild(row);
+  }
+
+  groupNode.appendChild(eventItems);
+
+  if (group.events.length > MAX_ITEMS_PER_PLATFORM) {
+    const more = document.createElement('p');
+    more.className = 'group-more';
+    more.textContent = `仅展示前 ${MAX_ITEMS_PER_PLATFORM} 条，剩余 ${group.events.length - MAX_ITEMS_PER_PLATFORM} 条请按关键词进一步筛选。`;
+    groupNode.appendChild(more);
+  }
+
+  return groupNode;
+}
+
 function renderEvents(items) {
   eventListEl.innerHTML = '';
   if (items.length === 0) {
     const empty = document.createElement('li');
     empty.className = 'empty';
-    empty.textContent = '暂无匹配活动，建议更换筛选条件或稍后刷新。';
+    empty.textContent = '最近 3 天暂无匹配活动，建议更换筛选条件或稍后刷新。';
     eventListEl.appendChild(empty);
     return;
   }
 
+  const grouped = groupEventsByPlatform(items);
   const fragment = document.createDocumentFragment();
-  for (const item of items) {
-    const node = templateEl.content.cloneNode(true);
-    node.querySelector('.tag').textContent = item.platform;
-    node.querySelector('.time').textContent = formatDate(item.publishedAt);
-    node.querySelector('.title').textContent = item.title;
-    node.querySelector('.summary').textContent = item.summary;
-    const sourceEl = node.querySelector('.source');
-    sourceEl.href = item.sourceUrl;
-    sourceEl.textContent = `来源：${item.sourceName}`;
-    fragment.appendChild(node);
+  for (const group of grouped) {
+    fragment.appendChild(createPlatformGroupNode(group));
   }
   eventListEl.appendChild(fragment);
 }
@@ -153,17 +241,21 @@ async function fetchEvents() {
       throw new Error(`HTTP ${response.status}`);
     }
     const data = await response.json();
+
     allEvents = Array.isArray(data.events) ? data.events : [];
     modelPlatforms = Array.isArray(data.modelPlatforms) ? data.modelPlatforms : modelPlatforms;
     infoPlatforms = Array.isArray(data.infoPlatforms) ? data.infoPlatforms : infoPlatforms;
+    windowDays = Number.isFinite(data.windowDays) ? data.windowDays : windowDays;
+
     ensurePlatformFilterOptions([...modelPlatforms, ...infoPlatforms]);
     renderModelPlatforms(modelPlatforms, infoPlatforms);
     rerenderByFilter();
+
     lastUpdatedEl.textContent = `最近更新时间：${formatDate(data.updatedAt)}`;
     if (Array.isArray(data.errors) && data.errors.length > 0) {
-      setStatus(`部分数据源失败（${data.errors.length}个），已展示可用结果`, true);
+      setStatus(`近 ${windowDays} 天已加载 ${allEvents.length} 条（部分源失败 ${data.errors.length} 个）`, true);
     } else {
-      setStatus(`已加载 ${allEvents.length} 条活动`, false);
+      setStatus(`近 ${windowDays} 天已加载 ${allEvents.length} 条`, false);
     }
   } catch (err) {
     setStatus(`加载失败：${err.message}`, true);

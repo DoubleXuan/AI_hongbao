@@ -26,9 +26,11 @@ module.exports = async function handler(req, res) {
         updatedAt: new Date().toISOString(),
         total: 1,
         events: fallbackEvents(),
+        groupedEvents: [],
         errors: [err.message || '服务异常'],
         modelPlatforms: KNOWN_MODEL_PLATFORMS,
-        infoPlatforms: KNOWN_INFO_PLATFORMS
+        infoPlatforms: KNOWN_INFO_PLATFORMS,
+        windowDays: 3
       })
     );
   }
