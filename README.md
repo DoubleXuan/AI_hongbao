@@ -1,11 +1,11 @@
 # 春节红包活动实时看板
 
-一个轻量网页 APP，用于聚合和展示微信、腾讯混元、通义千问及更多主流 AI 平台红包活动相关资讯。
+一个轻量网页 APP，用于聚合和展示主流 AI 模型平台与信息平台（小红书、抖音、头条等）的红包活动资讯。
 
 ## 功能
 
-- 实时聚合多个新闻 RSS 数据源
-- 平台筛选（含主流 AI 大模型平台）
+- 实时聚合多来源 RSS（Bing News RSS + Google News RSS）
+- 平台筛选（主流 AI 大模型 + 信息平台）
 - 关键词搜索过滤
 - 手动刷新 + 每 60 秒自动刷新
 - 数据源异常时自动降级提示
@@ -27,6 +27,12 @@ npm start
   - `POST /api/analyze`
 - 前端：原生 HTML/CSS/JS
 
+## 活动来源覆盖
+
+- AI 模型平台：微信 AI、腾讯混元、通义千问、豆包、文心、Kimi、GLM、OpenAI、Claude、Gemini、Grok、Llama、Mistral、DeepSeek、MiniMax、Yi
+- 信息平台：小红书、抖音、今日头条、微博、知乎、B 站
+- 说明：公开平台通常无稳定官方开放搜索 API，当前采用新闻聚合 RSS 的站点定向检索方式覆盖多平台信息
+
 ## AI API 配置（Vercel/本地）
 
 在环境变量中配置以下字段（OpenAI 兼容协议）：
@@ -35,3 +41,7 @@ npm start
 - `AI_API_BASE_URL`：例如 `https://api.openai.com/v1` 或你自建网关地址
 - `AI_API_MODEL`：例如 `gpt-4o-mini`、`qwen-plus`、`hunyuan-turbo` 等
 - `AI_API_CHAT_PATH`：可选，默认 `/chat/completions`
+
+## 可选环境变量
+
+- `EVENTS_CACHE_TTL_MS`：活动抓取缓存时间（毫秒），默认 `180000`

@@ -14,6 +14,7 @@ const analysisResultEl = document.getElementById('analysisResult');
 
 let allEvents = [];
 let modelPlatforms = [];
+let infoPlatforms = [];
 let autoRefreshTimer = null;
 let autoRefreshEnabled = true;
 const AUTO_REFRESH_MS = 60 * 1000;
@@ -66,15 +67,23 @@ function ensurePlatformFilterOptions(platforms) {
   aiOption.textContent = 'AI 红包综合';
   platformFilterEl.appendChild(aiOption);
 
+  const multiOption = document.createElement('option');
+  multiOption.value = 'multi';
+  multiOption.textContent = '多平台热点';
+  platformFilterEl.appendChild(multiOption);
+
   const hasPrevious = [...platformFilterEl.options].some((opt) => opt.value === previousValue);
   platformFilterEl.value = hasPrevious ? previousValue : 'all';
 }
 
-function renderModelPlatforms(platforms) {
+function renderModelPlatforms(modelItems, infoItems) {
   modelListEl.innerHTML = '';
-  const uniquePlatforms = uniqueByTag(platforms);
+  const typedPlatforms = [
+    ...uniqueByTag(modelItems).map((item) => ({ ...item, type: '模型' })),
+    ...uniqueByTag(infoItems).map((item) => ({ ...item, type: '信息平台' }))
+  ];
 
-  if (uniquePlatforms.length === 0) {
+  if (typedPlatforms.length === 0) {
     const fallback = document.createElement('span');
     fallback.className = 'model-chip';
     fallback.textContent = '暂无平台数据';
@@ -83,10 +92,10 @@ function renderModelPlatforms(platforms) {
   }
 
   const fragment = document.createDocumentFragment();
-  for (const platform of uniquePlatforms) {
+  for (const platform of typedPlatforms) {
     const chip = document.createElement('span');
     chip.className = 'model-chip';
-    chip.textContent = platform.name;
+    chip.textContent = `${platform.name} · ${platform.type}`;
     fragment.appendChild(chip);
   }
   modelListEl.appendChild(fragment);
@@ -146,8 +155,9 @@ async function fetchEvents() {
     const data = await response.json();
     allEvents = Array.isArray(data.events) ? data.events : [];
     modelPlatforms = Array.isArray(data.modelPlatforms) ? data.modelPlatforms : modelPlatforms;
-    ensurePlatformFilterOptions(modelPlatforms);
-    renderModelPlatforms(modelPlatforms);
+    infoPlatforms = Array.isArray(data.infoPlatforms) ? data.infoPlatforms : infoPlatforms;
+    ensurePlatformFilterOptions([...modelPlatforms, ...infoPlatforms]);
+    renderModelPlatforms(modelPlatforms, infoPlatforms);
     rerenderByFilter();
     lastUpdatedEl.textContent = `最近更新时间：${formatDate(data.updatedAt)}`;
     if (Array.isArray(data.errors) && data.errors.length > 0) {

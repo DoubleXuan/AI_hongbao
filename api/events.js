@@ -1,4 +1,9 @@
-const { getEvents, fallbackEvents, KNOWN_MODEL_PLATFORMS } = require('../lib/events-service');
+const {
+  getEvents,
+  fallbackEvents,
+  KNOWN_MODEL_PLATFORMS,
+  KNOWN_INFO_PLATFORMS
+} = require('../lib/events-service');
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -22,7 +27,8 @@ module.exports = async function handler(req, res) {
         total: 1,
         events: fallbackEvents(),
         errors: [err.message || '服务异常'],
-        modelPlatforms: KNOWN_MODEL_PLATFORMS
+        modelPlatforms: KNOWN_MODEL_PLATFORMS,
+        infoPlatforms: KNOWN_INFO_PLATFORMS
       })
     );
   }
